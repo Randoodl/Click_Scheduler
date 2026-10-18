@@ -20,26 +20,27 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 All the commands issued whenever a button is pressed
 """
 
-import pyautogui as Gui, keyboard as Keys
+import tkinter as Tk, pyautogui as Gui, keyboard as Keys
 
 from time import sleep
-from tkinter import filedialog, END
+from tkinter import Toplevel, filedialog
 
 from src import TextContent
 
 
 #Will be populated with a proper values from main
 #Dumb way of doing it? Yes, but I am not known for elegant code
-InputTable = []
-MainDialog = []
+AppWindow  = None
+InputTable = None
+MainDialog = None
 
 
 def UpdateDialogBox(Message):
     #Chuck a message on screen
     
     MainDialog.config(state="normal")
-    MainDialog.delete('1.0', END)
-    MainDialog.insert(END, Message)
+    MainDialog.delete('1.0', Tk.END)
+    MainDialog.insert(Tk.END, Message)
     MainDialog.config(state="disabled")
 
 
@@ -154,10 +155,28 @@ def StartSequence():
                 UpdateDialogBox(TextContent.TABLE_FAULT)
                 return
     
-    #Wait a few seconds before launching the sequence
-    #This is so you can minimize the program or something
-    sleep(3)
-    
     if len(ListOfActions):
+
+        #Wait a few seconds before launching the sequence
+        #This is so you can minimize the program or something
+        sleep(3)
         #Catches recursion if started with an empty sequence
         ExecuteSequence(ListOfActions)
+
+
+def ShowCoordinates():
+    #Create a full-screen overlay to show mouse coordinates
+
+    #Minimise the sequence gui 
+    
+
+    #Create a new overlay
+    ScreenOverlay = Tk.Tk()
+    ScreenOverlay.config(width=400, height=300)
+    AppWindow.iconify()
+    #ScreenOverlay.attributes("-fullscreen", True)
+    #ScreenOverlay.attributes("-alpha", 0.3)
+
+
+    #AppWindow.deiconify()
+
