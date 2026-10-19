@@ -27,7 +27,7 @@ from src import Tables, ButtonActions as Actions
 def CreateFunctionPanel(PassedWindow, PanelWidth, PanelHeight):
     #Create the Canvas that holds all the buttons and gizmos and whatizzits
 
-    FunctionCanvas = Actions.Tk.Canvas(PassedWindow, bg="red", width=PanelWidth, height=PanelHeight)
+    FunctionCanvas = Actions.Tk.Canvas(PassedWindow, width=PanelWidth, height=PanelHeight)
     FunctionCanvasFrame = Actions.Tk.Frame(FunctionCanvas)
     FunctionCanvas.create_window((0,0), window=FunctionCanvasFrame, anchor="nw")
     
@@ -37,7 +37,7 @@ def CreateFunctionPanel(PassedWindow, PanelWidth, PanelHeight):
 def CreateTablePanel(PassedWindow):
     #Create the panel to hold the faux-Table for input scheduling
 
-    TableCanvas = Actions.Tk.Canvas(PassedWindow, bg="green", width=560)
+    TableCanvas = Actions.Tk.Canvas(PassedWindow, width=560)
     TableScroll = Actions.Tk.Scrollbar(PassedWindow, orient="vertical", command=TableCanvas.yview)
     TableScrollFrame = Actions.Tk.Frame(TableCanvas)
     TableScrollFrame.bind("<Configure>", lambda x: TableCanvas.configure(scrollregion=TableCanvas.bbox("all")))
@@ -108,7 +108,7 @@ def main():
     StartSequenceButton.grid(row=2, column=1, sticky="ew")
 
     #SHOW COORDINATES
-    ShowCoordinatesButton = Actions.Tk.Button(FunctionPanel, text="NoAction Test", command=Actions.ShowCoordinates, width=20)
+    ShowCoordinatesButton = Actions.Tk.Button(FunctionPanel, text="Show Mouse Location", command=Actions.ShowCoordinates, width=20)
     ShowCoordinatesButton.grid(row=2, column=0, sticky="ew")
 
     #Create a dialog box to chuck some messages on screen if need be

@@ -70,7 +70,7 @@ class Table:
         #First clear ALL cells of content
         for Row in self.Cells:
             for Cell in Row:
-                Cell.delete(0, 'end')
+                Cell.delete(0, Tk.END)
 
         #Then write data to 'em
         for n_Instruction in range(len(Instructions)):

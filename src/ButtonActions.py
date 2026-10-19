@@ -101,6 +101,7 @@ def ExecuteSequence(PassedListOfActions):
         #Force a way to break a loop, only triggers after the delay
         if Keys.is_pressed('esc'):
             UpdateDialogBox(TextContent.SEQ_INTERRUPT)
+            AppWindow.deiconify()
             return
 
         #Move cursor    
@@ -178,24 +179,47 @@ def StartSequence():
         Iterations = 0
         while(Iterations < LoopMax):
             ExecuteSequence(ListOfActions)
-            Iterations += 1        
+            Iterations += 1
+
+        AppWindow.deiconify()        
 
 
+def CloseCoordinateScreen(PassedOverlay, PassedMainWindow):
+    #Exit out of the coordinate overlay
+
+    PassedOverlay.destroy()
+    PassedMainWindow.deiconify()
+
+
+def PrintCoordinatesToBox(event):
+    #Print mouse location to screen
+
+    MousePositionBox.delete('1.0', Tk.END)
+    MousePositionBox.insert(Tk.END, "Width:  " + str(Gui.position().x) + "\nHeight: " + str(Gui.position().y))
+
+   
 def ShowCoordinates():
     #Create a full-screen overlay to show mouse coordinates
 
-    UpdateDialogBox("This feature hasn't been implemented yet.")
-    return
-    #Minimise the sequence gui 
-    
+    #Making these global so other functions can access them
+    #Not great, not terrible
+    global ScreenOverlay, MousePositionBox
 
-    #Create a new overlay
-    ScreenOverlay = Tk.Tk()
-    ScreenOverlay.config(width=400, height=300)
+    #Minimise the Sequence gui 
     AppWindow.iconify()
-    #ScreenOverlay.attributes("-fullscreen", True)
-    #ScreenOverlay.attributes("-alpha", 0.3)
 
+    #Create a full-screen overlay
+    ScreenOverlay = Tk.Tk()
+    ScreenOverlay.attributes("-fullscreen", True)
+    ScreenOverlay.attributes("-alpha", 0.65)
 
-    #AppWindow.deiconify()
+    #Create a button to exit the overlay and return to the Sequence viewer
+    ExitOverlayButton = Tk.Button(ScreenOverlay, text="Return", font=("System",15), command= lambda: CloseCoordinateScreen(ScreenOverlay, AppWindow))
+    ExitOverlayButton.grid(row=0, column=0, sticky="ew")
 
+    #Create a Text widget to display the position of the cursor on screen
+    MousePositionBox = Tk.Text(ScreenOverlay, font=("System", 15), height=2, width=12)
+    MousePositionBox.grid(row=1, column=0, sticky="nesw")
+
+    #Bind mouse motion to the updating of shown coordinates
+    ScreenOverlay.bind("<Motion>", PrintCoordinatesToBox)
