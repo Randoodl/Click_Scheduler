@@ -59,6 +59,18 @@ def CreateTableHeaders(PassedWindow):
         HeaderLabel.grid(row=0, column=1 + n_Header)
 
 
+def CreateMaxLoopCounter(PassedWindow):
+    #Allows for an input value that will loop over the sequence n amount of times, then exits
+
+    InfoLabel = Actions.Tk.Label(PassedWindow, text="Max iterations:")
+    InfoLabel.grid(row=1, column=0, sticky="ew")
+
+    MaxIterationsBox = Actions.Tk.Entry(PassedWindow, width=15)
+    MaxIterationsBox.grid(row=1, column=1, sticky="nesw")
+
+    return MaxIterationsBox
+
+
 def main():
     #Create the main window
     MainWindow = Actions.Tk.Tk()
@@ -77,27 +89,31 @@ def main():
     #Create the headers for the table
     CreateTableHeaders(TableSection)
 
+    #Create a field to set a max loop cap
+    MaxInterationBox = CreateMaxLoopCounter(FunctionPanel)
+    Actions.MaxInterationsBox = MaxInterationBox
+
     #Create a bunch of Buttons
 
     #SAVE
     SaveSequenceButton = Actions.Tk.Button(FunctionPanel, text="Save Sequence", command=Actions.SaveSequence, width=20)
-    SaveSequenceButton.grid(row=3, column=0, sticky="ew")
+    SaveSequenceButton.grid(row=0, column=0, sticky="ew")
 
     #LOAD
     LoadSequenceButton = Actions.Tk.Button(FunctionPanel, text="Load Sequence", command=Actions.LoadSequence, width=20)
-    LoadSequenceButton.grid(row=3, column=1, sticky="ew")
+    LoadSequenceButton.grid(row=0, column=1, sticky="ew")
 
     #START
     StartSequenceButton = Actions.Tk.Button(FunctionPanel, text="Start", command=Actions.StartSequence, width=20)
-    StartSequenceButton.grid(row=4, column=0, columnspan=2, sticky="ew")
+    StartSequenceButton.grid(row=2, column=1, sticky="ew")
 
     #SHOW COORDINATES
-    ShowCoordinatesButton = Actions.Tk.Button(FunctionPanel, text="Test", command=Actions.ShowCoordinates, width=20)
-    ShowCoordinatesButton.grid(row=7, column=0, columnspan=2, sticky="ew")
+    ShowCoordinatesButton = Actions.Tk.Button(FunctionPanel, text="NoAction Test", command=Actions.ShowCoordinates, width=20)
+    ShowCoordinatesButton.grid(row=2, column=0, sticky="ew")
 
     #Create a dialog box to chuck some messages on screen if need be
-    StatusBox = Actions.Tk.Text(FunctionPanel, width= 40, height=5, wrap="word")
-    StatusBox.grid(row=6, column=0, columnspan=2, sticky="ew")
+    StatusBox = Actions.Tk.Text(FunctionPanel, width= 40, height=4, wrap="word")
+    StatusBox.grid(row=3, column=0, columnspan=2, sticky="ew")
     StatusBox.config(state='disabled')
     Actions.MainDialog = StatusBox
 
@@ -107,7 +123,7 @@ def main():
 
     #And a lil' dev note
     AboutCard = Actions.Tk.Label(FunctionPanel, height=2, text=Actions.TextContent.VERSION, justify='left', fg='grey')
-    AboutCard.grid(row=12, column=0, rowspan=2, columnspan=2, sticky="ew")
+    AboutCard.grid(row=13, column=0, rowspan=2, columnspan=2, sticky="ew")
     
     MainWindow.mainloop()
 

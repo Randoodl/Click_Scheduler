@@ -33,6 +33,7 @@ from src import TextContent
 AppWindow  = None
 InputTable = None
 MainDialog = None
+MaxInterationsBox = None
 
 
 def UpdateDialogBox(Message):
@@ -111,10 +112,6 @@ def ExecuteSequence(PassedListOfActions):
         
         #Delays after clicks allow for laggy systems to register what the fuck just happened   
         sleep(Instruction[3])
-        
-    #Loop the same action back, until ESC is pressed
-    #This in no way, shape or form will cause issues. Surely.
-    ExecuteSequence(PassedListOfActions)
 
 
 def StartSequence():
@@ -123,6 +120,17 @@ def StartSequence():
     #READ and EXECUTE phase are split as to not run into issues mid-sequence
 
     ListOfActions = []
+    LoopMax = 0
+
+    #Check if the max iterations is set correctly
+    try:
+        LoopMax = int(MaxInterationsBox.get())
+        MaxInterationsBox.config({"background" :"white"})
+        UpdateDialogBox("") #lazy bastard
+    except:
+        MaxInterationsBox.config({"background" :"#de525e"})
+        UpdateDialogBox(TextContent.ITER_FAULT)
+        return
 
     for n_Command in range(len(InputTable.Cells)):
 
@@ -155,18 +163,29 @@ def StartSequence():
                 UpdateDialogBox(TextContent.TABLE_FAULT)
                 return
     
+    #Catches recursion if started with an empty sequence
     if len(ListOfActions):
 
         #Wait a few seconds before launching the sequence
-        #This is so you can minimize the program or something
-        sleep(3)
-        #Catches recursion if started with an empty sequence
-        ExecuteSequence(ListOfActions)
+        #It used to be here to allow window minimisation, but that's taken care of now with iconify()
+        #Now it remains here to gives the impression it "does something"
+        sleep(2)
+        AppWindow.iconify()
+
+        #Print this before any possible interrupt lines
+        UpdateDialogBox(TextContent.SEQ_FINISHED)
+
+        Iterations = 0
+        while(Iterations < LoopMax):
+            ExecuteSequence(ListOfActions)
+            Iterations += 1        
 
 
 def ShowCoordinates():
     #Create a full-screen overlay to show mouse coordinates
 
+    UpdateDialogBox("This feature hasn't been implemented yet.")
+    return
     #Minimise the sequence gui 
     
 

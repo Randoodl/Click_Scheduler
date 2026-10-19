@@ -66,6 +66,14 @@ class Table:
 
     def UpdateCells(self, Instructions):
         #Load values into cells if a Sequence is opened
+
+        #First clear ALL cells of content
+        for Row in self.Cells:
+            for Cell in Row:
+                Cell.delete(0, 'end')
+
+        #Then write data to 'em
         for n_Instruction in range(len(Instructions)):
             for n_Cell in range(4):
+                self.Cells[n_Instruction][n_Cell]
                 self.Cells[n_Instruction][n_Cell].insert(Tk.END, Instructions[n_Instruction][n_Cell])
