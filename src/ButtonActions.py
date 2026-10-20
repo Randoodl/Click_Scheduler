@@ -28,31 +28,23 @@ from tkinter import Toplevel, filedialog
 from src import TextContent
 
 
-#Will be populated with a proper values from main
-#Dumb way of doing it? Yes, but I am not known for elegant code
-AppWindow  = None
-InputTable = None
-MainDialog = None
-MaxInterationsBox = None
-
-
-def UpdateDialogBox(Message):
+def UpdateDialogBox(StatusBox, Message):
     #Chuck a message on screen
     
-    MainDialog.config(state="normal")
-    MainDialog.delete('1.0', Tk.END)
-    MainDialog.insert(Tk.END, Message)
-    MainDialog.config(state="disabled")
+    StatusBox.config(state="normal")
+    StatusBox.delete('1.0', Tk.END)
+    StatusBox.insert(Tk.END, Message)
+    StatusBox.config(state="disabled")
 
 
-def SaveSequence():
+def SaveSequence(SequenceTable):
     #Just dump all the instructions (correct or not) into a file to export
 
     ExportRules = []
 
     #Go through all instructions
-    for n_Command in range(len(InputTable.Cells)):
-        EvaluatedCommand = InputTable.Cells[n_Command]
+    for n_Command in range(len(SequenceTable.Cells)):
+        EvaluatedCommand = SequenceTable.Cells[n_Command]
             
         #If there even is but one value, save it
         ContainsValue = False
@@ -71,7 +63,7 @@ def SaveSequence():
         File.close()
 
 
-def LoadSequence():
+def LoadSequence(SequenceTable):
     #Load a sequence and populate all rules into what I pretend is a table
     
     FilePath = filedialog.askopenfilename(title="Open Sequence File")
@@ -86,7 +78,7 @@ def LoadSequence():
                     Instructions.append(InputCells)
             File.close()
 
-            InputTable.UpdateCells(Instructions)
+            SequenceTable.UpdateCells(Instructions)
 
         except:
             UpdateDialogBox(TextContent.SEQ_LOADERROR)
@@ -115,28 +107,28 @@ def ExecuteSequence(PassedListOfActions):
         sleep(Instruction[3])
 
 
-def StartSequence():
+def StartSequence(MainWindow, SequenceTable, StatusBox, MaxIterationBox):
     #Kicks off reading the sequence and executing the clicking actions
     #First constructs a list of actions to be carried out
     #READ and EXECUTE phase are split as to not run into issues mid-sequence
-
+    
     ListOfActions = []
     LoopMax = 0
 
     #Check if the max iterations is set correctly
     try:
-        LoopMax = int(MaxInterationsBox.get())
-        MaxInterationsBox.config({"background" :"white"})
-        UpdateDialogBox("") #lazy bastard
+        LoopMax = int(MaxIterationBox.get())
+        MaxIterationBox.config({"background" :"white"})
+        UpdateDialogBox(StatusBox, "") #lazy bastard
     except:
-        MaxInterationsBox.config({"background" :"#de525e"})
-        UpdateDialogBox(TextContent.ITER_FAULT)
+        MaxIterationBox.config({"background" :"#de525e"})
+        UpdateDialogBox(StatusBox, TextContent.ITER_FAULT)
         return
 
-    for n_Command in range(len(InputTable.Cells)):
+    for n_Command in range(len(SequenceTable.Cells)):
 
         #Doing this verbosely to have both the object and its index
-        EvaluatedCommand = InputTable.Cells[n_Command]
+        EvaluatedCommand = SequenceTable.Cells[n_Command]
         
         #Empty actions will not be evaluated
         if len(EvaluatedCommand[0].get()) != 0:
@@ -149,19 +141,19 @@ def StartSequence():
                 
                 #Do some screen bounds checking
                 if(ScreenX > Gui.size().width or ScreenY > Gui.size().height):
-                    InputTable.MarkInputCells(n_Command, "#de525e")
-                    UpdateDialogBox(TextContent.TABLE_COORD)
+                    SequenceTable.MarkInputCells(n_Command, "#de525e")
+                    UpdateDialogBox(StatusBox, TextContent.TABLE_COORD)
                     return
 
                 #Dumb way to reset cell colour
-                InputTable.MarkInputCells(n_Command, "white")
+                SequenceTable.MarkInputCells(n_Command, "white")
 
                 #This is now a cleaned up set of instructions
                 ListOfActions.append([EvaluatedCommand[0].get(), ScreenX, ScreenY, Delay])
 
             except:
-                InputTable.MarkInputCells(n_Command, "#de525e")
-                UpdateDialogBox(TextContent.TABLE_FAULT)
+                SequenceTable.MarkInputCells(n_Command, "#de525e")
+                UpdateDialogBox(StatusBox, TextContent.TABLE_FAULT)
                 return
     
     #Catches recursion if started with an empty sequence
@@ -171,17 +163,17 @@ def StartSequence():
         #It used to be here to allow window minimisation, but that's taken care of now with iconify()
         #Now it remains here to gives the impression it "does something"
         sleep(2)
-        AppWindow.iconify()
+        MainWindow.iconify()
 
         #Print this before any possible interrupt lines
-        UpdateDialogBox(TextContent.SEQ_FINISHED)
+        UpdateDialogBox(StatusBox, TextContent.SEQ_FINISHED)
 
         Iterations = 0
         while(Iterations < LoopMax):
             ExecuteSequence(ListOfActions)
             Iterations += 1
 
-        AppWindow.deiconify()        
+        MainWindow.deiconify()        
 
 
 def CloseCoordinateScreen(PassedOverlay, PassedMainWindow):
@@ -198,7 +190,7 @@ def PrintCoordinatesToBox(event):
     MousePositionBox.insert(Tk.END, "Width:  " + str(Gui.position().x) + "\nHeight: " + str(Gui.position().y))
 
    
-def ShowCoordinates():
+def ShowCoordinates(MainWindow):
     #Create a full-screen overlay to show mouse coordinates
 
     #Making these global so other functions can access them
@@ -206,7 +198,7 @@ def ShowCoordinates():
     global ScreenOverlay, MousePositionBox
 
     #Minimise the Sequence gui 
-    AppWindow.iconify()
+    MainWindow.iconify()
 
     #Create a full-screen overlay
     ScreenOverlay = Tk.Tk()
@@ -214,7 +206,8 @@ def ShowCoordinates():
     ScreenOverlay.attributes("-alpha", 0.65)
 
     #Create a button to exit the overlay and return to the Sequence viewer
-    ExitOverlayButton = Tk.Button(ScreenOverlay, text="Return", font=("System",15), command= lambda: CloseCoordinateScreen(ScreenOverlay, AppWindow))
+    ExitOverlayButton = Tk.Button(ScreenOverlay, text="Return", font=("System",15), 
+    command= lambda: CloseCoordinateScreen(ScreenOverlay, MainWindow))
     ExitOverlayButton.grid(row=0, column=0, sticky="ew")
 
     #Create a Text widget to display the position of the cursor on screen
