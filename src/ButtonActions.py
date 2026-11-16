@@ -63,7 +63,7 @@ def SaveSequence(SequenceTable):
         File.close()
 
 
-def LoadSequence(SequenceTable):
+def LoadSequence(SequenceTable, StatusBox):
     #Load a sequence and populate all rules into what I pretend is a table
     
     FilePath = filedialog.askopenfilename(title="Open Sequence File")
@@ -81,10 +81,10 @@ def LoadSequence(SequenceTable):
             SequenceTable.UpdateCells(Instructions)
 
         except:
-            UpdateDialogBox(TextContent.SEQ_LOADERROR)
+            UpdateDialogBox(StatusBox, TextContent.SEQ_LOADERROR)
 
 
-def ExecuteSequence(PassedListOfActions):
+def ExecuteSequence(PassedListOfActions, StatusBox):
     #Continues the sequence by executing it
         
     #Verbosely for indexing and all that jazz
@@ -92,17 +92,18 @@ def ExecuteSequence(PassedListOfActions):
     
         #Force a way to break a loop, only triggers after the delay
         if Keys.is_pressed('esc'):
-            UpdateDialogBox(TextContent.SEQ_INTERRUPT)
+            UpdateDialogBox(StatusBox, TextContent.SEQ_INTERRUPT)
             AppWindow.deiconify()
             return
 
-        #Move cursor    
-        Gui.moveTo(Instruction[1], Instruction[2], 0)
+        #Move cursor
+        if Instruction[0] in ["Idle", "Left Click", "Right Click"]:    
+            Gui.moveTo(Instruction[1], Instruction[2], 0)
 
         #Fun, but ultimately obtuse way to determine left or right click event. But _funi_
-        if Instruction[0] != "Idle":
-            Gui.click(button=["left", "right"][["Left Click", "Right Click"].index(Instruction[0])])
-        
+            if Instruction[0] != "Idle":
+                Gui.click(button=["left", "right"][["Left Click", "Right Click"].index(Instruction[0])])
+
         #Delays after clicks allow for laggy systems to register what the fuck just happened   
         sleep(Instruction[3])
 
@@ -170,7 +171,7 @@ def StartSequence(MainWindow, SequenceTable, StatusBox, MaxIterationBox):
 
         Iterations = 0
         while(Iterations < LoopMax):
-            ExecuteSequence(ListOfActions)
+            ExecuteSequence(ListOfActions, StatusBox)
             Iterations += 1
 
         MainWindow.deiconify()        

@@ -62,7 +62,7 @@ def CreateTableHeaders(PassedWindow):
 def CreateMaxLoopCounter(PassedWindow):
     #Allows for an input value that will loop over the sequence n amount of times, then exits
 
-    InfoLabel = Actions.Tk.Label(PassedWindow, text="Max iterations:")
+    InfoLabel = Actions.Tk.Label(PassedWindow, text="Max Iterations:")
     InfoLabel.grid(row=1, column=0, sticky="ew")
 
     MaxIterationsBox = Actions.Tk.Entry(PassedWindow, width=15)
@@ -79,7 +79,7 @@ def CreateButtons(MainWindow, FunctionPanel, SequenceTable, StatusBox, MaxIterat
     SaveSequenceButton.grid(row=0, column=0, sticky="ew")
 
     LoadSequenceButton = Actions.Tk.Button(FunctionPanel, text="Load Sequence", width=20,
-    command= lambda : Actions.LoadSequence(SequenceTable))
+    command= lambda : Actions.LoadSequence(SequenceTable, StatusBox))
     LoadSequenceButton.grid(row=0, column=1, sticky="ew")
 
     StartSequenceButton = Actions.Tk.Button(FunctionPanel, text="Start", width=20,
